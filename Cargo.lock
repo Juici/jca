@@ -3,3 +3,18 @@
 [[package]]
 name = "jca"
 version = "0.0.0"
+
+[[package]]
+name = "jca-cli"
+version = "0.0.0"
+dependencies = [
+ "jca",
+ "jca-interp",
+]
+
+[[package]]
+name = "jca-interp"
+version = "0.0.0"
+dependencies = [
+ "jca",
+]

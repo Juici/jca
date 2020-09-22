@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "jca"
-version = "0.0.0"
+version = "0.0.1"
 
 [[package]]
 name = "jca-cli"

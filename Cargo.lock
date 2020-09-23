@@ -3,6 +3,9 @@
 [[package]]
 name = "jca"
 version = "0.0.1"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "jca-cli"
@@ -18,3 +21,9 @@ version = "0.0.0"
 dependencies = [
  "jca",
 ]
+
+[[package]]
+name = "serde"
+version = "1.0.116"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96fe57af81d28386a513cbc6858332abc6117cfdb5999647c6444b8f43a370a5"

@@ -5,13 +5,14 @@ authors = ["James Whaley <juicy66173@gmail.com>"]
 description = "The interpreter for the jca language."
 edition = "2018"
 license = "MIT/Apache-2.0"
+readme = "README.md"
 
-homepage = "https://github.com/Juici/jca"
 repository = "https://github.com/Juici/jca"
+homepage = "https://github.com/Juici/jca"
 
 # TODO: Fill in categories and keywords as appropriate.
 categories = []
 keywords = []
 
 [dependencies]
-jca = { version = "0.0", path = "../" }
+jca = { version = "0.0", path = "../jca" }

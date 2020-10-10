@@ -1,18 +1,15 @@
-use std::mem;
+use core::mem;
 
-// TODO: Look into support for u128 and possible requirement or benefits of
-//       using u32 and u64 on 32-bit systems.
-
-/// Internal representation of the digits in an `Integer`.
+/// Internal representation of the digits in an `ApInt`.
 pub type LimbRepr = u64;
-/// Internal computation unit in an `Integer`.
+/// Internal computation unit in an `ApInt`.
 pub type DoubleLimbRepr = u128;
 
 const REPR_ZERO: LimbRepr = 0x0;
 const REPR_ONE: LimbRepr = 0x1;
 const REPR_ONES: LimbRepr = !REPR_ZERO;
 
-/// A limb is part of an `Integer` that fits within a single machine word.
+/// A limb is part of an `ApInt` that fits within a single machine word.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Limb(LimbRepr);
 
@@ -37,7 +34,7 @@ impl Limb {
 macro_rules! impl_fmt {
     ($ty:ty: [$($trait:ident),* $(,)*]) => {
         $(
-            impl std::fmt::$trait for $ty {
+            impl core::fmt::$trait for $ty {
                 fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                     self.repr().fmt(f)
                 }

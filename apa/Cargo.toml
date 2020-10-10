@@ -1,19 +1,16 @@
 [package]
-name = "jca-cli"
+name = "apa"
 version = "0.0.0"
 authors = ["James Whaley <juicy66173@gmail.com>"]
-description = "A command-line interface to the jca interpreter."
+description = "An arbitrary-precision arithmetic library."
 edition = "2018"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 
+documentation = "https://docs.rs/apa"
 repository = "https://github.com/Juici/jca"
 homepage = "https://github.com/Juici/jca"
 
 # TODO: Fill in categories and keywords as appropriate.
 categories = []
 keywords = []
-
-[dependencies]
-jca = { version = "0.0", path = "../jca" }
-jca-interp = { version = "0.0", path = "../jca-interp" }

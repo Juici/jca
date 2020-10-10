@@ -1,9 +1,9 @@
 use core::mem;
 
-/// Internal representation of the digits in an `ApInt`.
+#[cfg(target_pointer_width = "32")]
+pub type LimbRepr = u32;
+#[cfg(target_pointer_width = "64")]
 pub type LimbRepr = u64;
-/// Internal computation unit in an `ApInt`.
-pub type DoubleLimbRepr = u128;
 
 const REPR_ZERO: LimbRepr = 0x0;
 const REPR_ONE: LimbRepr = 0x1;
@@ -25,8 +25,45 @@ impl Limb {
     pub const ONES: Limb = Limb(REPR_ONES);
 
     /// Returns the value of the internal representation.
+    #[inline]
     pub fn repr(self) -> LimbRepr {
         self.0
+    }
+
+    /// Calculates `self` + `other`.
+    ///
+    /// Returns a tuple of the addition along with a boolean indicating whether
+    /// an arithmetic overflow would occur. If an overflow would have occurred
+    /// then the wrapped value is returned.
+    #[inline]
+    pub fn add_overflow(self, other: Limb) -> (Limb, bool) {
+        let (val, carry) = self.repr().overflowing_add(other.repr());
+        (Limb(val), carry)
+    }
+
+    /// Calculates `self` - `other`.
+    ///
+    /// Returns a tuple of the subtraction along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would have
+    /// occurred then the wrapped value is returned.
+    #[inline]
+    pub fn sub_overflow(self, other: Limb) -> (Limb, bool) {
+        let (val, carry) = self.repr().overflowing_sub(other.repr());
+        (Limb(val), carry)
+    }
+
+    /// Returns the number of leading zeros in the binary representation of the
+    /// limb.
+    #[inline]
+    pub fn leading_zeros(self) -> LimbRepr {
+        self.repr().leading_zeros() as LimbRepr
+    }
+
+    /// Returns the number of trailing zeros in the binary representation of
+    /// the limb.
+    #[inline]
+    pub fn trailing_zeros(self) -> LimbRepr {
+        self.repr().trailing_zeros() as LimbRepr
     }
 }
 

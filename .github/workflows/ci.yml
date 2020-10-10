@@ -1,37 +1,55 @@
-name: CI
+name: ci
 on:
   pull_request:
   push:
+    branches:
+      - master
   schedule:
     - cron: '00 01 * * *'
 
+env:
+  # Coloured output from Cargo.
+  CARGO_TERM_COLOR: always
+
 jobs:
   test:
-    name: Test
+    name: test
+    env:
+      # Emit backtraces on panics.
+      RUST_BACKTRACE: 1
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        build: [stable, beta, nightly, msrv]
+        build:
+          - pinned
+          - stable
+          - beta
+          - nightly
         include:
+          - build: pinned
+            rust: 1.47.0
           - build: stable
             rust: stable
           - build: beta
             rust: beta
           - build: nightly
             rust: nightly
-          - build: msrv
-            rust: 1.46.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           override: true
           profile: minimal
-      - run: cargo build --workspace --verbose
-      - run: cargo test --workspace --verbose
+
+      - name: Build
+        run: cargo build --verbose --workspace
+
+      - name: Run tests
+        run: cargo test --verbose --workspace
 
   rustfmt:
     name: Rustfmt

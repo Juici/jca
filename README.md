@@ -3,8 +3,8 @@
 [![CI][ci-badge]][ci-link]
 [![Crates.io][cargo-badge]][cargo-link]
 
-[ci-link]: https://github.com/Juici/jca/actions?query=workflow%3ACI
-[ci-badge]: https://img.shields.io/github/workflow/status/Juici/jca/CI.svg
+[ci-link]: https://github.com/Juici/jca/actions?query=workflow%3Aci
+[ci-badge]: https://img.shields.io/github/workflow/status/Juici/jca/ci.svg
 
 [cargo-link]: https://crates.io/crates/jca
 [cargo-badge]: https://img.shields.io/crates/v/jca.svg

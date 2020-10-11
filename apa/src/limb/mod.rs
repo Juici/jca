@@ -15,7 +15,7 @@ pub struct Limb(LimbRepr);
 
 impl Limb {
     /// The number of bits in a single `Limb`.
-    pub const BITS: usize = mem::size_of::<LimbRepr>();
+    pub const BITS: usize = mem::size_of::<LimbRepr>() * 8;
 
     /// A `Limb` with value `0`.
     pub const ZERO: Limb = Limb(REPR_ZERO);

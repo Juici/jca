@@ -24,3 +24,17 @@ unsafe impl Send for ApInt {}
 /// `ApInt` can safely be shared between threads, since it does not own
 /// aliasing memory and has no mutable internal state.
 unsafe impl Sync for ApInt {}
+
+impl ApInt {
+    /// Represents an `ApInt` with value `0`.
+    pub const ZERO: ApInt = ApInt {
+        len: BitWidth::W1,
+        data: ApIntData { value: Limb::ZERO },
+    };
+
+    /// Represents an `ApInt` with value `1`.
+    pub const ONE: ApInt = ApInt {
+        len: BitWidth::W1,
+        data: ApIntData { value: Limb::ONE },
+    };
+}

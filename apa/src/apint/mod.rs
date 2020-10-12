@@ -4,12 +4,24 @@ use core::ptr::NonNull;
 use crate::limb::Limb;
 use crate::mem;
 
+mod convert;
+
 /// An arbitrary-precision integer.
 pub struct ApInt {
     /// The number of limbs used to store data.
     len: NonZeroUsize,
     /// The data holding the bits of the integer.
     data: ApIntData,
+}
+
+enum ApIntStorage<'a> {
+    Stack(Limb),
+    Heap(&'a NonNull<Limb>),
+}
+
+enum ApIntStorageMut<'a> {
+    Stack(&'a mut Limb),
+    Heap(&'a mut NonNull<Limb>),
 }
 
 /// A single stack allocated limb or pointer to heap allocated limbs.
@@ -34,7 +46,7 @@ impl ApInt {
     pub const ONE: ApInt = ApInt::from_limb(Limb::ONE);
 
     /// Creates an `ApInt` with a single limb.
-    pub(crate) const fn from_limb(value: Limb) -> ApInt {
+    const fn from_limb(value: Limb) -> ApInt {
         ApInt {
             // SAFETY: 1 is guaranteed to be non-zero.
             len: unsafe { NonZeroUsize::new_unchecked(1) },
@@ -50,7 +62,7 @@ impl ApInt {
     ///
     /// Calling this function with a capacity of `1` will result in undefined
     /// behaviour.
-    pub(crate) fn with_capacity(capacity: NonZeroUsize) -> ApInt {
+    fn with_capacity(capacity: NonZeroUsize) -> ApInt {
         // Sanity check when testing. Since this is an internal function we
         // should be able to guarantee it is never called with a capacity of 1.
         debug_assert!(
@@ -65,25 +77,47 @@ impl ApInt {
         }
     }
 
-    /// Returns the number of limbs used to represent the integer.
-    #[inline]
-    pub(crate) fn len(&self) -> NonZeroUsize {
-        self.len
-    }
+    // TODO: Replace with actual API.
 
-    /// Returns the limb at the given offset.
-    pub(crate) unsafe fn limb(&self, offset: usize) -> Limb {
+    /// Returns a storage accessor for the limb data.
+    fn storage(&self) -> ApIntStorage {
         match self.len.get() {
-            1 => self.data.value,
-            _ => *self.data.p_value.as_ptr().add(offset),
+            // SAFETY: The len is non-zero.
+            0 => unsafe { core::hint::unreachable_unchecked() },
+            // SAFETY: A len of 1 guarantees that value is a valid limb.
+            1 => ApIntStorage::Stack(unsafe { self.data.value }),
+            // SAFETY: A len greater than 1 guarantees that p_value is a valid pointer.
+            _ => ApIntStorage::Heap(unsafe { &self.data.p_value }),
         }
     }
 
-    /// Returns a mutable reference to the limb at the given offset.
-    pub(crate) unsafe fn limb_mut(&mut self, offset: usize) -> &mut Limb {
+    /// Returns a mutable storage accessor for the limb data.
+    fn storage_mut(&mut self) -> ApIntStorageMut {
         match self.len.get() {
-            1 => &mut self.data.value,
-            _ => &mut *self.data.p_value.as_ptr().add(offset),
+            // SAFETY: The len is non-zero.
+            0 => unsafe { core::hint::unreachable_unchecked() },
+            // SAFETY: A len of 1 guarantees that value is a valid limb.
+            1 => ApIntStorageMut::Stack(unsafe { &mut self.data.value }),
+            // SAFETY: A len greater than 1 guarantees that p_value is a valid pointer.
+            _ => ApIntStorageMut::Heap(unsafe { &mut self.data.p_value }),
+        }
+    }
+
+    // TODO: Add proper limb accessor/iterator.
+
+    /// Returns the limb at the given index.
+    pub(crate) unsafe fn limb(&self, index: usize) -> Limb {
+        match self.storage() {
+            ApIntStorage::Stack(limb) => limb,
+            ApIntStorage::Heap(ptr) => *ptr.as_ptr().add(index),
+        }
+    }
+
+    /// Returns a mutable reference to the limb at the given index.
+    pub(crate) unsafe fn limb_mut(&mut self, index: usize) -> &mut Limb {
+        match self.storage_mut() {
+            ApIntStorageMut::Stack(limb) => limb,
+            ApIntStorageMut::Heap(ptr) => &mut *ptr.as_ptr().add(index),
         }
     }
 }

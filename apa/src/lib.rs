@@ -6,7 +6,6 @@
 extern crate alloc;
 
 mod apint;
-mod convert;
 mod limb;
 mod mem;
 

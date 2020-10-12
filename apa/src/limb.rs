@@ -1,5 +1,3 @@
-use core::mem;
-
 #[cfg(target_pointer_width = "32")]
 pub type LimbRepr = u32;
 #[cfg(target_pointer_width = "64")]
@@ -10,12 +8,15 @@ const REPR_ONE: LimbRepr = 0x1;
 const REPR_ONES: LimbRepr = !REPR_ZERO;
 
 /// A limb is part of an `ApInt` that fits within a single machine word.
+#[repr(transparent)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Limb(LimbRepr);
+pub struct Limb(pub LimbRepr);
 
 impl Limb {
+    /// The number of bytes in a single `Limb`.
+    pub const SIZE: usize = core::mem::size_of::<Limb>();
     /// The number of bits in a single `Limb`.
-    pub const BITS: usize = mem::size_of::<LimbRepr>() * 8;
+    pub const BITS: usize = Self::SIZE * 8;
 
     /// A `Limb` with value `0`.
     pub const ZERO: Limb = Limb(REPR_ZERO);

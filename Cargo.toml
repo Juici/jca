@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "apa",
     "jca",
     "jca-cli",
     "jca-interp",

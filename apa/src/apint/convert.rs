@@ -144,7 +144,7 @@ macro_rules! impl_to_prim {
                     unsafe {
                         match int.storage() {
                             ApIntStorage::Stack(limb) => limb.repr() as $ty,
-                            ApIntStorage::Heap(ptr) if SIZE_LIMB == SIZE_TY => *ptr.cast().as_ptr(),
+                            ApIntStorage::Heap(ptr) if SIZE_TY <= SIZE_LIMB * int.len.get() => *ptr.cast().as_ptr(),
                             ApIntStorage::Heap(ptr) => {
                                 // The number of limbs that fit in $ty.
                                 const FACTOR: usize = SIZE_TY / SIZE_LIMB;

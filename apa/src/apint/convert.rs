@@ -3,6 +3,15 @@ use core::num::NonZeroUsize;
 use crate::apint::{ApInt, ApIntStorage};
 use crate::limb::{Limb, LimbRepr};
 
+/// Store limbs in native endian order to make primitive casts quicker.
+#[inline]
+fn limb_order(len: usize) -> impl Iterator<Item = usize> {
+    let iter = 0..len;
+    #[cfg(target_endian = "big")]
+    let iter = iter.rev();
+    iter
+}
+
 macro_rules! impl_from_prim {
     (unsigned: $($ty:ty),* $(,)?) => {
         $(
@@ -36,13 +45,8 @@ macro_rules! impl_from_prim {
                         // due to the nature of non-standard bit-shifts across platforms.
                         let iter_to = capacity.get() - (SIZE_TY == SIZE_LIMB) as usize;
 
-                        // Store in native endian order to make primitive casts quicker.
-                        let iter = 0..iter_to;
-                        #[cfg(target_endian = "big")]
-                        let iter = iter.rev();
-
                         let mut val = val;
-                        for i in iter {
+                        for i in limb_order(iter_to) {
                             // The value of the limb.
                             let limb = val & MASK;
 
@@ -103,13 +107,8 @@ macro_rules! impl_from_prim {
 
                         let mut int = ApInt::with_capacity(capacity);
 
-                        // Store in native endian order to make primitive casts quicker.
-                        let iter = 0..capacity.get();
-                        #[cfg(target_endian = "big")]
-                        let iter = iter.rev();
-
                         let mut val = val;
-                        for i in iter {
+                        for i in limb_order(capacity.get()) {
                             // The value of the limb.
                             let limb = val & MASK;
 
@@ -151,13 +150,8 @@ macro_rules! impl_to_prim {
                                 // Copy only as many limbs as we have.
                                 let n_copy = int.len.get().min(FACTOR);
 
-                                // Deal with native endian.
-                                let iter = 0..n_copy;
-                                #[cfg(target_endian = "big")]
-                                let iter = iter.rev();
-
                                 let mut val = 0;
-                                for (i, j) in iter.enumerate() {
+                                for (i, j) in limb_order(n_copy).enumerate() {
                                     let limb = *ptr.as_ptr().add(j);
                                     let limb = limb.repr() as $ty;
                                     val |= limb.wrapping_shl((BITS_LIMB * i) as u32);
@@ -185,38 +179,3 @@ impl_to_prim!(
     u8, u16, u32, u64, u128, usize,
     i8, i16, i32, i64, i128, isize,
 );
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn convert_primitive() {
-        macro_rules! assert_conv {
-            ($ty:ident: $($val:expr),* $(,)*) => {
-                $({
-                    let val = $val as $ty;
-                    let int = ApInt::from(val);
-                    assert_eq!(<$ty>::from(int), val);
-                })*
-            };
-        }
-
-        assert_conv!(u8: 0);
-        assert_conv!(i8: 0);
-
-        assert_conv!(u8: u8::MAX);
-        assert_conv!(u16: u16::MAX);
-        assert_conv!(u32: u32::MAX);
-        assert_conv!(u64: u64::MAX);
-        assert_conv!(u128: u128::MAX);
-        assert_conv!(usize: usize::MAX);
-
-        assert_conv!(i8: i8::MAX, i8::MIN);
-        assert_conv!(i16: i16::MAX, i16::MIN);
-        assert_conv!(i32: i32::MAX, i32::MIN);
-        assert_conv!(i64: i64::MAX, i64::MIN);
-        assert_conv!(i128: i128::MAX, i128::MIN);
-        assert_conv!(isize: isize::MAX, isize::MIN);
-    }
-}

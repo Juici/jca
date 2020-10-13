@@ -14,3 +14,11 @@ homepage = "https://github.com/Juici/jca"
 # TODO: Fill in categories and keywords as appropriate.
 categories = []
 keywords = []
+
+[features]
+default = ["std"]
+
+std = []
+
+[dependencies]
+cfg-if = "1.0"

@@ -1,8 +1,8 @@
-use alloc::alloc::{alloc_zeroed, dealloc, handle_alloc_error};
 use core::alloc::Layout;
 use core::num::NonZeroUsize;
 use core::ptr::NonNull;
 
+use crate::alloc;
 use crate::limb::Limb;
 
 pub fn alloc_limbs(capacity: NonZeroUsize) -> NonNull<Limb> {
@@ -14,9 +14,9 @@ pub fn alloc_limbs(capacity: NonZeroUsize) -> NonNull<Limb> {
 
     // TODO: Replace with allocator_api when stabilised.
     // SAFETY: This is safe since we have verified the integrity of the layout.
-    let ptr = unsafe { alloc_zeroed(layout) };
+    let ptr = unsafe { alloc::alloc_zeroed(layout) };
     if ptr.is_null() {
-        handle_alloc_error(layout);
+        alloc::handle_alloc_error(layout);
     }
 
     // SAFETY: ptr is guaranteed to be non-null at this point.
@@ -32,7 +32,7 @@ pub fn dealloc_limbs(ptr: NonNull<Limb>, size: NonZeroUsize) {
     // SAFETY: ptr is already already allocated so we can bypass checks.
     let layout = unsafe { Layout::from_size_align_unchecked(size, ALIGN) };
     // SAFETY: ptr is guaranteed to be non-null and layout is correct.
-    unsafe { dealloc(ptr.cast().as_ptr(), layout) };
+    unsafe { alloc::dealloc(ptr.cast().as_ptr(), layout) };
 }
 
 // We need to guarantee the following:

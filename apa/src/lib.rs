@@ -1,10 +1,9 @@
 //! An arbitrary-precision arithmetic library.
 
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![deny(missing_docs)]
 
-extern crate alloc;
-
+mod alloc;
 mod apint;
 mod limb;
 mod mem;

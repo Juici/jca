@@ -16,6 +16,6 @@ categories = []
 keywords = []
 
 [dependencies]
-apa = { version = "0.0.0", path = "../apa" }
+apa = { version = "0.0.0", git = "https://github.com/Juici/apa.git" }
 
 serde = "1"

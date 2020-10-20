@@ -3,7 +3,7 @@
 [[package]]
 name = "apa"
 version = "0.0.0"
-source = "git+https://github.com/Juici/apa.git#32c81ea58b87b785a35ab37fa61d0e4ae5e3739a"
+source = "git+https://github.com/Juici/apa.git#2df53680d63cf2c793225cd9e4adfbb925fe827f"
 dependencies = [
  "cfg-if",
  "num-integer",

@@ -1,6 +1,2 @@
 [workspace]
-members = [
-    "jca",
-    "jca-cli",
-    "jca-interp",
-]
+members = ["crates/*"]

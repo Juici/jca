@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
   schedule:
-    - cron: '00 01 * * *'
+    - cron: '00 00 * * *'
 
 env:
   # Coloured output from Cargo.
@@ -50,17 +50,19 @@ jobs:
         run: cargo test --verbose --workspace
 
   rustfmt:
-    name: Rustfmt
+    name: rustfmt
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
           override: true
           profile: minimal
           components: rustfmt
+
       - name: Check formatting
         run: cargo fmt --all -- --check

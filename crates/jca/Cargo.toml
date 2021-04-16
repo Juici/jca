@@ -1,12 +1,13 @@
 [package]
-name = "jca-cli"
-version = "0.0.0"
+name = "jca"
+version = "0.0.1"
 authors = ["James Whaley <juicy66173@gmail.com>"]
-description = "A command-line interface to the jca interpreter."
+description = "An experimental computer algebra system."
 edition = "2018"
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
 
+documentation = "https://docs.rs/jca"
 repository = "https://github.com/Juici/jca"
 homepage = "https://github.com/Juici/jca"
 
@@ -15,5 +16,3 @@ categories = []
 keywords = []
 
 [dependencies]
-jca = { version = "0.0", path = "../jca" }
-jca-interp = { version = "0.0", path = "../jca-interp" }
